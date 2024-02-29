@@ -23,8 +23,7 @@ import debug_toolbar
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # debug toolbar
-    path("__debug__/", include(debug_toolbar.urls)),
+
 ]
 
 if settings.DEBUG:
@@ -32,3 +31,4 @@ if settings.DEBUG:
         settings.MEDIA_URL,
         document_root=settings.MEDIA_ROOT
     )
+    urlpatterns.append(path("__debug__/", include(debug_toolbar.urls)))
