@@ -4,24 +4,18 @@ from utils.images import resize_image
 
 # Create your models here.
 
-#         Produto:
-#             nome - Char
-#             descricao_curta - Text
-#             descricao_longa - Text
-#             imagem - Image
-#             slug - Slug
-#             preco_marketing - Float
-#             preco_marketing_promocional - Float
-#             tipo - Choices
-#                 ('V', 'Variável'),
-#                 ('S', 'Simples'),
-
-#         Variacao:
-#             nome - char
-#             produto - FK Produto
-#             preco - Float
-#             preco_promocional - Float
-#             estoque - Int
+"""        Produto:
+            nome - Char
+            descricao_curta - Text
+            descricao_longa - Text
+            imagem - Image
+            slug - Slug
+            preco_marketing - Float
+            preco_marketing_promocional - Float
+            tipo - Choices
+                ('V', 'Variável'),
+                ('S', 'Simples'),
+"""
 
 
 class Product(models.Model):
@@ -68,12 +62,14 @@ class Product(models.Model):
         return self.name
 
 
-#        Variacao:
-#             nome - char
-#             produto - FK Produto
-#             preco - Float
-#             preco_promocional - Float
-#             estoque - Int
+"""       Variacao:
+            nome - char
+            produto - FK Produto
+            preco - Float
+            preco_promocional - Float
+            estoque - Int
+"""
+
 
 class Variation(models.Model):
     class Meta:
@@ -83,6 +79,7 @@ class Variation(models.Model):
     name = models.CharField(max_length=50)
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE,
+        related_name='variation'
     )
     slug = models.SlugField(
         unique=True, default=None,
@@ -90,7 +87,7 @@ class Variation(models.Model):
     )
     price = models.FloatField()
     price_promotional = models.FloatField(default=0)
-    stock = models.IntegerField(default=1)
+    stock = models.PositiveIntegerField(default=1)
 
     def save(self, *args, **kwargs):
         if not self.slug:
