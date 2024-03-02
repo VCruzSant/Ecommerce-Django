@@ -81,17 +81,9 @@ class Variation(models.Model):
         Product, on_delete=models.CASCADE,
         related_name='variation'
     )
-    slug = models.SlugField(
-        unique=True, default=None,
-        null=True, blank=True, max_length=255
-    )
     price = models.FloatField()
     price_promotional = models.FloatField(default=0)
     stock = models.PositiveIntegerField(default=1)
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify_new(self.name)
 
     def __str__(self) -> str:
         return self.name

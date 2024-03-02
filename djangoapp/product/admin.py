@@ -10,7 +10,7 @@ class VariationInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = 'id', 'name', 'slug',
+    list_display = 'id', 'name', 'slug', 'price_marketing',
     list_display_links = 'name',
     search_fields = 'id', 'name', 'slug',
     list_per_page = 10
