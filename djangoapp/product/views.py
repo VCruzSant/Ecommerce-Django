@@ -12,7 +12,7 @@ class ProductList(ListView):
     template_name = 'product/pages/index.html'
     context_object_name = 'products'
     ordering = '-pk',
-    paginate_by = 2
+    paginate_by = 9
 
 
 class ProducDetails(DetailView):
