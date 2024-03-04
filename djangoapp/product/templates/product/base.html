@@ -1,20 +1,19 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     {% include "product/partials/_head.html" %}
-</head>
+  </head>
 
-<body>
-    
+  <body>
     {% include "product/partials/_header.html" %}
 
-    {% block content %}{% endblock content %}
+    <main class="container mt-4 mb-4">
+      {% block content %}{% endblock content %}
+    </main>
 
-    {% include "product/partials/_pagination.html" %}
+    {% include "product/partials/_pagination.html" %} 
 
     {% include "product/partials/_footer.html" %}
 
-</body>
-
+  </body>
 </html>
