@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    {% include "product/partials/_head.html" %}
+</head>
+
+<body>
+    
+    {% include "product/partials/_header.html" %}
+
+    {% block content %}{% endblock content %}
+
+    {% include "product/partials/_pagination.html" %}
+
+    {% include "product/partials/_footer.html" %}
+
+</body>
+
+</html>

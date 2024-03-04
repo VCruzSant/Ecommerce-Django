@@ -1,0 +1,25 @@
+{% extends 'product/base.html' %}
+
+{% block content %}
+  <main class="main-content section-wrapper">
+    <div class="section-content-wide">
+      <div class="section-gap">
+
+        {% if products %}
+          <div class="card-grid">
+            {% for product in products %}
+              {% include 'product/partials/_product_card.html' with i=forloop.counter0 %}
+            {% endfor %}
+          </div>
+
+        {% else %}
+          <div class="not-found center">
+            <h1>Nada encontrado 😞</h1>
+            <p>Nenhum conteúdo foi encontrado, clique em outro link do nosso blog ou vá para <a href="{% url "product:index" %}">Home</a></p>
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </main>
+{% endblock content %}
