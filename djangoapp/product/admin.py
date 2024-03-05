@@ -5,7 +5,8 @@ from product.models import Product, Variation
 
 class VariationInline(admin.TabularInline):
     model = Variation
-    extra = 1
+    extra = 0
+    min_num = 1
 
 
 @admin.register(Product)
