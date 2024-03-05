@@ -16,7 +16,10 @@ class ProductList(ListView):
 
 
 class ProducDetails(DetailView):
-    ...
+    model = Product
+    template_name = 'product/pages/product.html'
+    context_object_name = 'products'
+    slug_field = 'slug'
 
 
 class AddToCart(View):

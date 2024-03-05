@@ -1,6 +1,7 @@
 from django.db import models
 from utils.word_random import slugify_new
 from utils.images import resize_image
+from django.urls import reverse
 
 # Create your models here.
 
@@ -40,6 +41,9 @@ class Product(models.Model):
             ('S', 'Simple'),
         )
     )
+
+    def get_absolute_url(self):
+        return reverse('product_app:product', args=(self.slug,))
 
     def save(self, *args, **kwargs):
         if not self.slug:

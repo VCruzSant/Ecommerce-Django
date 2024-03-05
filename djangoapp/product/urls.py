@@ -4,11 +4,11 @@ from product.views import (
     RemoveFromCart, Cart, Finish,
 )
 
-app_name = 'product'
+app_name = 'product_app'
 
 urlpatterns = [
     path('', ProductList.as_view(), name='index'),
-    path('product/<slug>', ProducDetails.as_view(), name='detail'),
+    path('product/<slug:slug>', ProducDetails.as_view(), name='product'),
     path('addtocart/', AddToCart.as_view(), name='addtocart'),
     path('removefromcart/', RemoveFromCart.as_view(), name='removefromcart'),
     path('cart/', Cart.as_view(), name='cart'),
