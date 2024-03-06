@@ -102,6 +102,7 @@ class AddToCart(View):
             cart[variation_id] = {
                 'product_id': product_id,
                 'product_name': product_name,
+                'variation_id': variation_id,
                 'variation_name': variation_name,
                 'price_unit': price_unit,
                 'price_unit_promotional': price_unit_promotional,
@@ -115,13 +116,47 @@ class AddToCart(View):
         messages.success(
             self.request,
             f'Itens adicionados com sucesso:  \
-            {product_name} - {variation_name} | Quantidade: {cart_quantity}x '
+            {product_name} - {variation_name} | \
+            Quantidade: {cart[variation_id]["amount"]}x'
         )
         return redirect(http_referer)
 
 
 class RemoveFromCart(View):
-    ...
+    def get(self, *args, **kwargs):
+        http_referer = self.request.META.get(
+            'HTTP_REFERER', reverse('product_app:index',)
+        )
+
+        # salvando valor fornecido por input no arquivo html,
+        # no caso eu estou dando um get no valor do name "vid"
+        variation_id = self.request.GET.get('vid')
+
+        if not variation_id:
+            print('cai no 1')
+            return redirect(http_referer)
+
+        if not self.request.session.get('cart'):
+            print('cai no 2')
+            return redirect(http_referer)
+
+        if variation_id not in self.request.session['cart']:
+            print('cai no 3')
+            print(self.request.session['cart'])
+            print()
+            print(variation_id)
+            return redirect(http_referer)
+
+        cart = self.request.session['cart'][variation_id]
+
+        messages.success(
+            self.request,
+            f'Produto {cart['product_name']} removido do carrinho'
+        )
+
+        del self.request.session['cart'][variation_id]
+        self.request.session.save()
+        return redirect(http_referer)
 
 
 class Cart(ListView):
