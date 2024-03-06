@@ -3,9 +3,11 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views import View
 from django.contrib import messages
-from django.http import HttpResponse
+# from django.http import HttpResponse
 from django.urls import reverse
 from product.models import Product, Variation
+
+from pprint import pprint
 
 
 # Create your views here.
@@ -49,6 +51,22 @@ class AddToCart(View):
 
         # pego as informações do meu obj passando a classe e o id
         variation = get_object_or_404(Variation, id=variation_id)
+        variation_stock = variation.stock
+        product = variation.product
+        product_id = product.pk
+        product_name = product.name
+        variation_name = variation.name
+        price_unit = variation.price
+        price_unit_promotional = variation.price_promotional
+        slug = product.slug
+        image = product.image.name
+
+        if variation_stock < 1:
+            messages.error(
+                self.request,
+                'Item fora de estoque'
+            )
+            return redirect(http_referer)
 
         # trabalhando com sessões
         # se não tiver uma sessão criada, eu crio
@@ -60,11 +78,46 @@ class AddToCart(View):
         cart = self.request.session['cart']
 
         if variation_id in cart:
-            ...
-        else:
-            ...
+            cart_quantity = cart[variation_id]['amount']
+            cart_quantity += 1
 
-        return HttpResponse('Adicionar ao carrinho', variation)
+            if variation_stock <= cart_quantity:
+                messages.warning(
+                    self.request,
+                    f'Quantidade desejada não disponivel, \
+                    restam apenas {variation_stock} produtos restantes. \
+                    Adicionei esses {variation_stock} produtos disponiveis \
+                    no seu carrinho'
+                )
+
+                cart_quantity = variation_stock
+
+            cart[variation_id]['amount'] = cart_quantity
+            cart[variation_id]['price_unit'] = price_unit * cart_quantity
+            cart[variation_id]['price_unit_promotional'] = (
+                price_unit_promotional * cart_quantity
+            )
+
+        else:
+            cart[variation_id] = {
+                'product_id': product_id,
+                'product_name': product_name,
+                'variation_name': variation_name,
+                'price_unit': price_unit,
+                'price_unit_promotional': price_unit_promotional,
+                'amount': 1,
+                'slug': slug,
+                'image': image,
+            }
+
+        self.request.session.save()
+        pprint(cart)
+        messages.success(
+            self.request,
+            f'Itens adicionados com sucesso:  \
+            {product_name} - {variation_name} | Quantidade: {cart_quantity}x '
+        )
+        return redirect(http_referer)
 
 
 class RemoveFromCart(View):
@@ -72,7 +125,10 @@ class RemoveFromCart(View):
 
 
 class Cart(ListView):
-    ...
+    model = Product
+    template_name = 'product/pages/cart.html'
+    ordering = '-pk',
+    paginate_by = 9
 
 
 class Finish(View):
