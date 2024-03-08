@@ -8,7 +8,7 @@ class Pay(View):
     ...
 
 
-class CloseOrder(View):
+class SaveOrder(View):
     ...
 
 

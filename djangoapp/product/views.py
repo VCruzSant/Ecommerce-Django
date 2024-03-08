@@ -171,5 +171,5 @@ class Cart(ListView):
     paginate_by = 9
 
 
-class Finish(View):
+class PurchaseSummary(View):
     ...
