@@ -59,7 +59,7 @@
                     <table class="table">
                         <tr>
                             <td class="font-weight-bold">Total</td>
-                            <td>{{request.session.cart}}</td>
+                            <td>R$ {{request.session.cart|cart_total}}</td>
                         </tr>
                     </table>
                 </div>

@@ -93,8 +93,11 @@ class AddToCart(View):
                 cart_quantity = variation_stock
 
             cart[variation_id]['amount'] = cart_quantity
-            cart[variation_id]['price_unit'] = price_unit * cart_quantity
-            cart[variation_id]['price_unit_promotional'] = (
+
+            cart[variation_id]['quantitative_price'] = price_unit * \
+                cart_quantity
+
+            cart[variation_id]['quantitative_price_promotional'] = (
                 price_unit_promotional * cart_quantity
             )
 
@@ -106,6 +109,8 @@ class AddToCart(View):
                 'variation_name': variation_name,
                 'price_unit': price_unit,
                 'price_unit_promotional': price_unit_promotional,
+                'quantitative_price': price_unit,
+                'quantitative_price_promotional': price_unit_promotional,
                 'amount': 1,
                 'slug': slug,
                 'image': image,
