@@ -22,7 +22,7 @@ import debug_toolbar
 
 urlpatterns = [
     path('', include('product.urls')),
-    path('perfil/', include('user_profile.urls')),
+    path('profile/', include('user_profile.urls')),
     path('order/', include('order.urls')),
     path('admin/', admin.site.urls),
 
