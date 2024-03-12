@@ -3,6 +3,14 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import password_validation
+from user_profile.models import UserProfile
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = '__all__'  # type: ignore
+        exclude = ('user',)
 
 
 class RegisterUserForm(UserCreationForm):
@@ -26,7 +34,7 @@ class RegisterUserForm(UserCreationForm):
     def clean_email(self):
         email = self.cleaned_data.get('email')
         current_email = self.instance.email
-        print(self.instance)
+        print(f'ESSE É O CEP {self.cleaned_data.get('cep')}')
 
         if current_email != email:
             if User.objects.filter(email=email).exists():

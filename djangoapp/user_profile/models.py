@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
 from utils.validator_cpf import cpf_validator
+from utils.format_cep import format_cep
 from django.forms import ValidationError
 from django.db import models
-import brazilcep
+
 
 # Create your models here.
 
@@ -111,7 +112,7 @@ class UserProfile(models.Model):
             raise ValidationError(error_messages)
 
         try:
-            brazilcep.get_address_from_cep(int(self.cep))
+            format_cep(self.cep)
 
         except:  # noqa: E722
             error_messages['cep'] = 'cep invalido'

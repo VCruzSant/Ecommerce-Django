@@ -1,11 +1,14 @@
 from django.views import View
-from user_profile.forms import RegisterUserForm, RegisterUpdateUserForm
+from user_profile.forms import (
+    RegisterUserForm, RegisterUpdateUserForm, ProfileForm
+)
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 from django.utils.decorators import method_decorator
 from django.contrib import messages
+import copy
 
 
 # Create your views here.
@@ -13,20 +16,34 @@ class RegisterView(View):
     template_name = 'user_profile/pages/register.html'
 
     def get(self, request):
-        form = RegisterUserForm()
+        form_user = RegisterUserForm(instance=request.user)
+        form_profile = ProfileForm(instance=request.user)
 
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name,
+                      {
+                          'form_user': form_user,
+                          'form_profile': form_profile,
+                      }
+                      )
 
     def post(self, request):
-        form = RegisterUserForm(request.POST)
+        form_user = RegisterUserForm(request.POST)
+        form_profile = ProfileForm(request.POST)
 
-        if form.is_valid():
-            form.save()
+        if form_user.is_valid() and form_profile.is_valid():
+            user = form_user.save()  # Salva o objeto User e obtém a instância
+            profile = form_profile.save(commit=False)
+            profile.user = user
+            profile.save()
             messages.success(request, 'Usuário registrado com sucesso')
-
             return redirect('user_profile:login')
 
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name,
+                      {
+                          'form_user': form_user,
+                          'form_profile': form_profile,
+                      }
+                      )
 
 
 @method_decorator(
@@ -36,39 +53,60 @@ class UpdateView(View):
     template_name = 'user_profile/pages/register.html'
 
     def get(self, request):
-        form = RegisterUpdateUserForm(instance=request.user)
+        self.cart = copy.deepcopy(self.request.session.get('cart', {}))
+        form_user = RegisterUpdateUserForm(instance=request.user)
+        form_profile = ProfileForm(instance=request.user)
 
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name,
+                      {
+                          'form_user': form_user,
+                          'form_profile': form_profile,
+                      }
+                      )
 
     def post(self, request):
-        form = RegisterUpdateUserForm(request.POST, instance=request.user)
+        form_user = RegisterUserForm(request.POST)
+        form_profile = ProfileForm(request.POST)
 
-        if not form.is_valid():
-            return render(request, self.template_name, {'form': form})
+        if form_user.is_valid() and form_profile.is_valid():
+            user = form_user.save()
+            profile = form_profile.save(commit=False)
+            profile.user = user
+            profile.save()
 
-        form.save()
-        return redirect('user_profile:update')
+            self.request.session['cart'] = self.cart
+            self.request.session.save()
+
+            messages.success(request, 'Usuário registrado com sucesso')
+            return redirect('user_profile:login')
+
+        return render(request, self.template_name,
+                      {
+                          'form_user': form_user,
+                          'form_profile': form_profile,
+                      }
+                      )
 
 
 class LoginView(View):
     template_name = 'user_profile/pages/login.html'
 
     def get(self, request):
-        form = AuthenticationForm(request)
-        return render(request, self.template_name, {'form': form})
+        form_user = AuthenticationForm(request)
+        return render(request, self.template_name, {'form_user': form_user})
 
     def post(self, request):
         print('loguei!!!')
-        form = AuthenticationForm(request, data=request.POST)
+        form_user = AuthenticationForm(request, data=request.POST)
 
-        if form.is_valid():
-            user = form.get_user()
+        if form_user.is_valid():
+            user = form_user.get_user()
             login(request, user)
             messages.success(request, 'Logado com sucesso')
             return redirect('product_app:index')
 
         messages.error(request, 'Login invalido')
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form_user': form_user})
 
 
 @method_decorator(
