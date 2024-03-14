@@ -5,9 +5,11 @@ from user_profile.forms import (
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
+from user_profile.models import UserProfile
 import copy
 
 
@@ -16,8 +18,8 @@ class RegisterView(View):
     template_name = 'user_profile/pages/register.html'
 
     def get(self, request):
-        form_user = RegisterUserForm(instance=request.user)
-        form_profile = ProfileForm(instance=request.user)
+        form_user = RegisterUserForm()
+        form_profile = ProfileForm()
 
         return render(request, self.template_name,
                       {
@@ -35,6 +37,17 @@ class RegisterView(View):
             profile = form_profile.save(commit=False)
             profile.user = user
             profile.save()
+
+            password = form_user.cleaned_data.get('password')
+
+            if password:
+                athentic = authenticate(
+                    self.request, username=user, password=password
+                )
+
+                if athentic:
+                    login(self.request, user=user)
+
             messages.success(request, 'Usuário registrado com sucesso')
             return redirect('user_profile:login')
 
@@ -47,15 +60,17 @@ class RegisterView(View):
 
 
 @method_decorator(
-    login_required(login_url='user_profile:login'), name='dispatch'
+    login_required(login_url='user_profile:login'), name='dispatch',
 )
 class UpdateView(View):
     template_name = 'user_profile/pages/register.html'
 
     def get(self, request):
-        self.cart = copy.deepcopy(self.request.session.get('cart', {}))
+        profile = UserProfile.objects.filter(
+            user=request.user
+        ).first()
         form_user = RegisterUpdateUserForm(instance=request.user)
-        form_profile = ProfileForm(instance=request.user)
+        form_profile = ProfileForm(instance=profile)
 
         return render(request, self.template_name,
                       {
@@ -64,18 +79,21 @@ class UpdateView(View):
                       }
                       )
 
+    @method_decorator(csrf_protect)
     def post(self, request):
-        form_user = RegisterUserForm(request.POST)
+        cart = copy.deepcopy(request.session.get('cart', {}))
+        form_user = RegisterUpdateUserForm(request.POST)
         form_profile = ProfileForm(request.POST)
 
         if form_user.is_valid() and form_profile.is_valid():
+            print('o form é valido')
             user = form_user.save()
             profile = form_profile.save(commit=False)
             profile.user = user
             profile.save()
 
-            self.request.session['cart'] = self.cart
-            self.request.session.save()
+            request.session['cart'] = cart
+            request.session.save()
 
             messages.success(request, 'Usuário registrado com sucesso')
             return redirect('user_profile:login')

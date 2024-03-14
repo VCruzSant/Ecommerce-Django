@@ -34,7 +34,6 @@ class RegisterUserForm(UserCreationForm):
     def clean_email(self):
         email = self.cleaned_data.get('email')
         current_email = self.instance.email
-        print(f'ESSE É O CEP {self.cleaned_data.get('cep')}')
 
         if current_email != email:
             if User.objects.filter(email=email).exists():
@@ -127,7 +126,12 @@ class RegisterUpdateUserForm(forms.ModelForm):
     def clean_email(self):
         email = self.cleaned_data.get('email')
         current_email = self.instance.email
+        print('instance:')
         print(self.instance)
+
+        print(f'ESSE É O EMAIL DIGITADO: {email}')
+        print()
+        print(current_email)
 
         if current_email != email:
             if User.objects.filter(email=email).exists():
