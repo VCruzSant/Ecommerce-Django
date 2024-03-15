@@ -107,8 +107,8 @@ class RegisterUpdateUserForm(forms.ModelForm):
         if password:
             user.set_password(password)
 
-        if commit:
-            user.save()
+        # if commit:
+        #     user.save()
 
         return user
 
@@ -125,15 +125,12 @@ class RegisterUpdateUserForm(forms.ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        current_email = self.instance.email
-        print('instance:')
-        print(self.instance)
+        current_email = User.objects.filter(email=email).first()
 
-        print(f'ESSE É O EMAIL DIGITADO: {email}')
-        print()
-        print(current_email)
+        print(f'EMAIL DIGITADO: {email}')
+        print(f'EMAIL BANCO: {current_email.email}')
 
-        if current_email != email:
+        if current_email.email != email:
             if User.objects.filter(email=email).exists():
                 self.add_error(
                     'email',

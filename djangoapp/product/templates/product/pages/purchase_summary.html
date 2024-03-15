@@ -1,0 +1,76 @@
+{% extends "global/base.html" %} 
+{% load my_filters %}
+{% block content %}
+
+    <div class="row mb-5">
+    <div class="col-lg">
+        <h2>Resumo da sua compra</h2>
+
+        <p class="lead">Dados do usuário</p>
+        <p>Caso precise editar, <a href="{% url "user_profile:update" %}">clique aqui</a></p>
+        <dl class="row">
+        <dt class="col-lg-2">Nome:</dt>
+        <dd class="col-lg-4">{{user.first_name}}</dd>
+        <dt class="col-lg-2">Sobrenome:</dt>
+        <dd class="col-lg-4">{{user.last_name}}</dd>
+
+        <dt class="col-lg-2">Idade:</dt>
+        <dd class="col-lg-4">{{user.user_profile.age}}</dd>
+        <dt class="col-lg-2">Nascimento:</dt>
+        <dd class="col-lg-4">{{user.user_profile.date_of_birth}}</dd>
+
+        <dt class="col-lg-2">CPF:</dt>
+        <dd class="col-lg-4">{{user.user_profile.cpf}}</dd>
+        <dt class="col-lg-2">E-mail:</dt>
+        <dd class="col-lg-4">{{user.email}}</dd>
+        </dl>
+
+        <p class="lead">Dados de endereço</p>
+        <p>Caso precise editar, <a href="{% url "user_profile:update" %}">clique aqui</a></p>
+        <dl class="row">
+        <dt class="col-lg-2">Endereço:</dt>
+        <dd class="col-lg-4">{{user.user_profile.adress}}</dd>
+        <dt class="col-lg-2">Número:</dt>
+        <dd class="col-lg-4">{{user.user_profile.number_adress}}</dd>
+
+        <dt class="col-lg-2">Complemento:</dt>
+        <dd class="col-lg-4">{{user.user_profile.complement}}</dd>
+        <dt class="col-lg-2">Bairro:</dt>
+        <dd class="col-lg-4">{{user.user_profile.neighborhood}}</dd>
+
+        <dt class="col-lg-2">Cidade:</dt>
+        <dd class="col-lg-4">{{user.user_profile.city}}</dd>
+        <dt class="col-lg-2">Estado:</dt>
+        <dd class="col-lg-4">{{user.user_profile.state}}</dd>
+
+        <dt class="col-lg-2">CEP:</dt>
+        <dd class="col-lg-4">{{user.user_profile.cep}}</dd>
+        </dl>
+    </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            {% include "global/partials/_cart.html" %}
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class='col'>
+            <p class='lead text-center'>
+                <span class='font-weight-bold'>Total no carrinho</span>
+                R$ {{request.session.cart|cart_total}}
+            </p>
+                
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <a class="btn btn-block btn-primary btn-lg" href="{% url "order:pay" %}">
+            Realizar pedido e pagar
+            </a>
+        </div>
+    </div>
+
+{% endblock content %}

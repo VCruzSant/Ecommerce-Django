@@ -6,9 +6,7 @@ from django.contrib import messages
 # from django.http import HttpResponse
 from django.urls import reverse
 from product.models import Product, Variation
-
-from pprint import pprint
-
+from user_profile.models import UserProfile
 
 # Create your views here.
 
@@ -117,7 +115,6 @@ class AddToCart(View):
             }
 
         self.request.session.save()
-        pprint(cart)
         messages.success(
             self.request,
             f'Itens adicionados com sucesso:  \
@@ -138,18 +135,12 @@ class RemoveFromCart(View):
         variation_id = self.request.GET.get('vid')
 
         if not variation_id:
-            print('cai no 1')
             return redirect(http_referer)
 
         if not self.request.session.get('cart'):
-            print('cai no 2')
             return redirect(http_referer)
 
         if variation_id not in self.request.session['cart']:
-            print('cai no 3')
-            print(self.request.session['cart'])
-            print()
-            print(variation_id)
             return redirect(http_referer)
 
         cart = self.request.session['cart'][variation_id]
@@ -172,4 +163,25 @@ class Cart(ListView):
 
 
 class PurchaseSummary(View):
-    ...
+    template_name = 'product/pages/purchase_summary.html'
+
+    def get(self, *args, **kwargs):
+        perfil = UserProfile.objects.filter(user=self.request.user).exists()
+
+        if not self.request.user.is_authenticated or not perfil:
+            return redirect('user_profile:register')
+
+        if not self.request.session['cart']:
+            messages.error(
+                self.request,
+                'Carrinho vazio'
+            )
+            return redirect('product_app:index')
+
+        context = {
+            'user': self.request.user,
+            'cart': self.request.session['cart'],
+        }
+
+        return render(
+            self.request, self.template_name, context)
