@@ -27,6 +27,9 @@ class Order(models.Model):
         related_name='order'
     )
     total = models.FloatField()
+
+    amount_total = models.PositiveIntegerField(default=0)
+
     status = models.CharField(
         default='C', max_length=1,
         choices=(
