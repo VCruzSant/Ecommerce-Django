@@ -104,18 +104,30 @@ class UserProfile(models.Model):
     def clean(self):
         error_messages = {}
 
+        cpf_cleanned = self.cpf or None
+        cpf_saved = None
+        profile = UserProfile.objects.filter(cpf_cleanned).first()
+
+        if profile:
+            cpf_saved = profile.cpf
+
+            # cpf salvo é não vazio(existe na base de dados)
+            # cpf salvo é diferente do pk do user
+            if cpf_saved is not None and self.pk != profile.pk:
+                error_messages['cpf'] = 'cpf already exists'
+
         if not cpf_validator(self.cpf):
-            error_messages['cpf'] = 'digite um cpf válido'
+            error_messages['cpf'] = 'enter a valid CPF'
 
         if self.cep == '':
-            error_messages['cep'] = 'digite um cep'
+            error_messages['cep'] = 'enter a cep'
             raise ValidationError(error_messages)
 
         try:
             format_cep(self.cep)
 
         except:  # noqa: E722
-            error_messages['cep'] = 'cep invalido'
+            error_messages['cep'] = 'invalid cep'
 
         if error_messages:
             raise ValidationError(error_messages)
