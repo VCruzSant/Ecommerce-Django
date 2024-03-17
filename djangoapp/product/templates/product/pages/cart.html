@@ -1,6 +1,7 @@
 {% extends 'global/base.html' %}
 {% load my_filters %}
 
+{% block title %}Cart{% endblock title %}
 
 {% block content %}
     {% if request.session.cart %}
