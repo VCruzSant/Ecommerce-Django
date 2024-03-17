@@ -18,7 +18,6 @@ class Pay(DetailView):
 
 
 class SaveOrder(View):
-    template_name = 'order/pages/pay.html'
 
     def get(self, *args, **kwargs):
         if not self.request.user.is_authenticated:
@@ -92,10 +91,10 @@ class SaveOrder(View):
         del self.request.session['cart']
 
         return redirect(
-            'order:pay',
-            kwargs={
-                'pk': order.pk
-            }
+            reverse('order:pay',
+                    kwargs={
+                        'pk': order.pk
+                    })
         )
 
 

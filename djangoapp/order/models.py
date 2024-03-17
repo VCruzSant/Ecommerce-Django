@@ -75,7 +75,7 @@ class OrderItem(models.Model):
     price = models.FloatField()
     price_promotional = models.FloatField(default=0)
     amount = models.PositiveIntegerField()
-    image = models.CharField(max_length=2000)
+    image = models.ImageField(upload_to='product_images/%Y/%m/')
 
     def __str__(self) -> str:
         return f'Order item {self.order}'
