@@ -10,7 +10,19 @@ from order.models import Order, OrderItem
 # Create your views here.
 
 
-class Pay(DetailView):
+class DispatchLoginRequiredMixin(View):
+    def dispatch(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect('user_profile:login')
+        return super().dispatch(*args, **kwargs)
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        qs = qs.filter(user=self.request.user)
+        return qs
+
+
+class Pay(DispatchLoginRequiredMixin, DetailView):
     template_name = 'order/pages/pay.html'
     model = Order
     pk_url_kwarg = 'pk'
@@ -98,11 +110,14 @@ class SaveOrder(View):
         )
 
 
-class Detail(View):
-    ...
+class DetailOrder(DispatchLoginRequiredMixin, DetailView):
+    model = Order
+    context_object_name = 'order'
+    template_name = 'order/pages/detail_order.html'
+    pk_url_kwarg = 'pk'
 
 
-class ListOrders(ListView):
+class ListOrders(DispatchLoginRequiredMixin, ListView):
     model = Order
     context_object_name = 'orders'
     template_name = 'order/pages/list_orders.html'
