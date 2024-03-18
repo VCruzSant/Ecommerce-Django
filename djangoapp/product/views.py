@@ -1,11 +1,13 @@
+from typing import Any
+from django.http import HttpRequest
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views import View
 from django.contrib import messages
-# from django.http import HttpResponse
 from django.urls import reverse
 from product.models import Product, Variation
+from django.db.models import Q
 from user_profile.models import UserProfile
 
 # Create your views here.
@@ -185,3 +187,32 @@ class PurchaseSummary(View):
 
         return render(
             self.request, self.template_name, context)
+
+
+class Search(ProductList):
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self._search_value = ''
+
+    def setup(self, request: HttpRequest, *args: Any, **kwargs: Any) -> None:
+        self._search_value = request.GET.get('search', '').strip()
+        return super().setup(request, *args, **kwargs)
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any):
+        if self._search_value == '':
+            return redirect('product_app:index')
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            Q(name__icontains=self._search_value) |
+            Q(description_short__icontains=self._search_value) |
+            Q(price_marketing__icontains=self._search_value)
+        )[:9]
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'search_value': self._search_value,
+        })
+        return context
